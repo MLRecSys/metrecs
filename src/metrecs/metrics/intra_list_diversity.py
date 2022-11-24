@@ -2,7 +2,7 @@ from typing import Any
 import numpy as np
 
 
-def retrieval_diversity(items: np.ndarray, distance_function: Any) -> float:
+def intra_list_diversity(items: np.ndarray, distance_function: Any) -> float:
     """Smyth and McClave [2001]
     * Source: https://link.springer.com/chapter/10.1007/3-540-44593-5_25
     * Measure the intra-list diversity of a recommendation list R(|R|>1) as the average pairwise distance between items:
@@ -13,7 +13,7 @@ def retrieval_diversity(items: np.ndarray, distance_function: Any) -> float:
         distance_function(X): function to compute the pairwise distances of items vector representations
 
     Returns:
-        float: retrieval_diversity score
+        float: diversity score
     """
     R = items.shape[0]
     # Less than or equal to 1 items in recommendation list
