@@ -10,5 +10,5 @@ setup(
     package_dir={"": "src"},
     url="https://github.com/gabriben/metrecs",
     keywords="Recommender Systems",
-    install_requires=["numpy", "spicy" "pytest"],
+    install_requires=["numpy", "spicy", "pytest"],
 )
