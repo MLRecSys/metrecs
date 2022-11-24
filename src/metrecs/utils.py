@@ -1,8 +1,8 @@
 from scipy.spatial.distance import pdist, squareform
-from typing import Dict, List, Iterable
 from collections import Counter
 import numpy as np
 import math
+from numpy.typing import ArrayLike
 from scipy.stats import entropy
 from numpy.linalg import norm
 
@@ -13,18 +13,26 @@ def harmonic_number(n):
     """
     # Euler-Mascheroni constant
     gamma = 0.57721566490153286060651209008240243104215933593992
-    return gamma + math.log(n) + 0.5 / n - 1. / (12 * n ** 2) + 1. / (120 * n ** 4)
+    return gamma + math.log(n) + 0.5 / n - 1.0 / (12 * n**2) + 1.0 / (120 * n**4)
 
-def histogram(a: np.array, adjusted = False):
-    n = np.unique(a, return_counts = True)[1]
+
+def histogram(a: np.array, catelog, rank_aware=False):
+    n = np.unique(a, return_counts=True)[1]
     sum_one_over_ranks = harmonic_number(len(a))
-    if adjusted:
-        p = n * 1 / np.sum(n) / sum_one_over_ranks
+    if rank_aware:
+        p = ( n * 1 / np.sum(n) ) / sum_one_over_ranks
     else:
         p = n * 1 / np.sum(n)
-    return(p)
+    return p
 
-def cosine_distances(X):
+
+def cosine_distances(X: ArrayLike) -> np.ndarray:
+    """Implementation of the pairwice cosine similarity function
+    Args:
+        X: {array-like, sparse matrix} of shape (n_samples_X, n_features)
+    Returns:
+        distance matrix: ndarray of shape (n_samples_X, n_samples_Y)
+    """
     distances = pdist(X, metric="cosine")
     return squareform(distances)
 
@@ -56,7 +64,7 @@ def scale_range(
 
 
 def opt_merge_max_mappings(dict1, dict2):
-    """ Merges two dictionaries based on the largest value in a given mapping.
+    """Merges two dictionaries based on the largest value in a given mapping.
     Parameters
     ----------
     dict1 : Dict[Any, Comparable]
@@ -75,6 +83,7 @@ def opt_merge_max_mappings(dict1, dict2):
             merged[key] = other[key]
     return merged
 
+
 def compute_kl_divergence(s, q, alpha=0.001):
     """
     KL (p || q), the lower the better.
@@ -87,13 +96,13 @@ def compute_kl_divergence(s, q, alpha=0.001):
     except AssertionError:
         print("Assertion Error")
         pass
-    kl_div = 0.
+    kl_div = 0.0
     ss = []
     qq = []
     merged_dic = opt_merge_max_mappings(s, q)
     for key in sorted(merged_dic.keys()):
-        q_score = q.get(key, 0.)
-        s_score = s.get(key, 0.)
+        q_score = q.get(key, 0.0)
+        s_score = s.get(key, 0.0)
         ss.append((1 - alpha) * s_score + alpha * q_score)
         qq.append((1 - alpha) * q_score + alpha * s_score)
         # by contruction they cannot be both 0
@@ -112,12 +121,12 @@ def compute_kl_divergence(s, q, alpha=0.001):
         #     ss.append(s_score)
         #     qq.append(q_score)
     kl = entropy(ss, qq, base=2)
-    jsd = JSD(ss,qq)
+    jsd = JSD(ss, qq)
     return [kl, jsd]
 
 
 def KL_symmetric(a, b):
-    return (entropy(a, b, base=2) + entropy(b, a, base=2))/2
+    return (entropy(a, b, base=2) + entropy(b, a, base=2)) / 2
 
 
 def JSD(P, Q):
@@ -127,10 +136,12 @@ def JSD(P, Q):
     # return 0.5 * (KL(_P, _M) + KL(_Q, _M))
     # added the abs to catch situations where the disocunting causes a very small <0 value, check this more!!!!
     try:
-        jsd_root = math.sqrt(abs(0.5 * (entropy(_P, _M, base=2) + entropy(_Q, _M, base=2))))
+        jsd_root = math.sqrt(
+            abs(0.5 * (entropy(_P, _M, base=2) + entropy(_Q, _M, base=2)))
+        )
     except ZeroDivisionError:
         print(P)
         print(Q)
         print()
         jsd_root = None
-    return 
+    return

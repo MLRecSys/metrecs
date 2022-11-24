@@ -1,8 +1,11 @@
-from typing import Any
+from typing import Callable
+from metrecs.utils import cosine_distances
 import numpy as np
 
 
-def intra_list_diversity(items: np.ndarray, distance_function: Any) -> float:
+def intralist_diversity(
+    items: np.ndarray, distance_function: Callable = cosine_distances
+) -> float:
     """Smyth and McClave [2001]
     * Source: https://link.springer.com/chapter/10.1007/3-540-44593-5_25
     * Measure the intra-list diversity of a recommendation list R(|R|>1) as the average pairwise distance between items:
