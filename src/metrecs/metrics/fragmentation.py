@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.special import kl_div
 
-import histogram
+from metrecs.utils import histogram
 
 def fragmentation(ref, own):
     """

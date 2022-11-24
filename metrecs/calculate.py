@@ -57,8 +57,10 @@ def fragmentation(pop_recs, own_recs):
     return(div)
 
 
+import numpy as np
+from metrecs import metrics
 
-
+metrics.fragmentation.fragmentation(pop_recs, own_recs)
 
 n = len(a)
 

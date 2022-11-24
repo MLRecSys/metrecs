@@ -15,6 +15,14 @@ def harmonic_number(n):
     gamma = 0.57721566490153286060651209008240243104215933593992
     return gamma + math.log(n) + 0.5 / n - 1. / (12 * n ** 2) + 1. / (120 * n ** 4)
 
+def histogram(a: np.array, adjusted = False):
+    n = np.unique(a, return_counts = True)[1]
+    sum_one_over_ranks = harmonic_number(len(a))
+    if adjusted:
+        p = n * 1 / np.sum(n) / sum_one_over_ranks
+    else:
+        p = n * 1 / np.sum(n)
+    return(p)
 
 def cosine_distances(X):
     distances = pdist(X, metric="cosine")
