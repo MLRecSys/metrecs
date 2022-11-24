@@ -1,6 +1,8 @@
 # 
 .DS_Store
 metrecs.egg-info
+*_pycache_*
+*.pyc
 
 # JK files:
 beyond_accuracy_metrics.py
