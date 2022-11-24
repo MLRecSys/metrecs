@@ -2,6 +2,8 @@
 
 metrics for recommendation systems
 
+![alt text](images/frozen.jpeg)
+
 # getting started
 
 ```python

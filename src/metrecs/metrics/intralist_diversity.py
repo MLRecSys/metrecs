@@ -1,5 +1,5 @@
-from typing import Callable
 from metrecs.utils import cosine_distances
+from typing import Callable
 import numpy as np
 
 
@@ -18,11 +18,11 @@ def intralist_diversity(
     Returns:
         float: diversity score
     """
-    R = items.shape[0]
-    # Less than or equal to 1 items in recommendation list
-    if R <= 1 or len(items.shape) == 1:
+    if len(items.shape) == 1:
+        # Less than or equal to 1 items in recommendation list
         diversity = np.nan
     else:
+        R = items.shape[0]
         pairwise_distances = distance_function(items)
         diversity = np.sum(pairwise_distances) / (R * (R - 1))
     return diversity
