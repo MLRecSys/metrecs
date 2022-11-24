@@ -20,7 +20,7 @@ def histogram(a: np.array, catelog, rank_aware=False):
     n = np.unique(a, return_counts=True)[1]
     sum_one_over_ranks = harmonic_number(len(a))
     if rank_aware:
-        p = ( n * 1 / np.sum(n) ) / sum_one_over_ranks
+        p = (n * 1 / np.sum(n)) / sum_one_over_ranks
     else:
         p = n * 1 / np.sum(n)
     return p
@@ -84,8 +84,9 @@ def opt_merge_max_mappings(dict1, dict2):
     return merged
 
 
-def compute_kl_divergence(s, q, alpha=0.001):
+def compute_kl_js_divergence(s, q, alpha=0.001):
     """
+    TODO: divice into KL / JS
     KL (p || q), the lower the better.
     alpha is not really a tuning parameter, it's just there to make the
     computation more numerically stable.

@@ -26,9 +26,8 @@ def fragmentation(
     """
 
     own_hist = histogram(user_item_representaion)  # add catelog
-    ref_hist = np.apply_along_axis(
-        histogram, 1, other_users_item_representaion
-    )  # add catelog
+    # add catelog
+    ref_hist = np.apply_along_axis(histogram, 1, other_users_item_representaion)
     [kl, jsd] = np.mean([compute_kl_divergence(own_hist, p) for p in ref_hist])
     return (kl, jsd)
 
