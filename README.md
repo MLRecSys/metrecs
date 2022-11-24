@@ -1,3 +1,3 @@
-# metrics
+# metrecs
 
 metrics for recommendation systems
