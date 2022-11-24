@@ -2,6 +2,7 @@ import numpy as np
 from scipy.special import kl_div
 
 from metrecs.utils import histogram
+from metrecs.utils import compute_kl_divergence
 
 def fragmentation(ref, own):
     """
@@ -12,5 +13,5 @@ def fragmentation(ref, own):
 
     own_hist = histogram(own)
     ref_hist = np.apply_along_axis(histogram, 1, ref)
-    div = np.mean([kl_div(own_hist, p) for p in ref_hist])
-    return(div)
+    [kl, jsd] = np.mean([compute_kl_divergence(own_hist, p) for p in ref_hist])
+    return(kl, jsd)
