@@ -14,6 +14,8 @@ def harmonic_number(n):
 a = np.array(["a", "a", "b", "c"])
 b = np.array(["a", "b", "b", "c"])
 
+
+
 def histogram(a: np.array, adjusted = False):
     n = np.unique(a, return_counts = True)[1]
     sum_one_over_ranks = harmonic_number(len(a))
@@ -30,6 +32,29 @@ def histogram(a: np.array, adjusted = False):
 da = histogram(a, adjusted = False)
 db = histogram(b, adjusted = True)
 kl_div(da, db)
+
+
+
+pop_recs = np.array([["a", "a", "b", "c"],
+                     ["a", "c", "b", "c"]])
+
+own_recs = np.array(["a", "a", "b", "c"])
+
+np.repeat(own_recs, 3)
+
+
+
+def fragmentation(pop_recs, own_recs):
+    # TODO: for vectorization
+    # own_recs_hist_rep = np.tile(own_recs_hist, (pop_recs.shape[0], 1))
+
+    own_recs_hist = histogram(own_recs)
+    pop_recs_hist = np.apply_along_axis(histogram, 1, pop_recs)
+    div = np.mean([kl_div(own_recs_hist, p) for p in pop_recs_hist])
+    return(div)
+
+
+
 
 
 n = len(a)
