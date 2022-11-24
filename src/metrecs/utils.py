@@ -1,6 +1,12 @@
+from scipy.spatial.distance import pdist, squareform
 from typing import Dict, List, Iterable
 from collections import Counter
 import numpy as np
+
+
+def cosine_distances(X):
+    distances = pdist(X, metric="cosine")
+    return squareform(distances)
 
 
 def scale_range(
