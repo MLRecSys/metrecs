@@ -1,10 +1,11 @@
+from numpy.typing import ArrayLike
 from metrecs.utils import cosine_distances
 from typing import Callable
 import numpy as np
 
 
 def intralist_diversity(
-    items: np.ndarray, distance_function: Callable = cosine_distances
+    items: ArrayLike[ArrayLike], distance_function: Callable = cosine_distances
 ) -> float:
     """Smyth and McClave [2001]
     * Source: https://link.springer.com/chapter/10.1007/3-540-44593-5_25
