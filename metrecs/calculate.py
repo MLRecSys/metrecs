@@ -3,9 +3,12 @@ import math
 from scipy.special import kl_div
 
 
-def harmonic_number(n):
+def harmonic_number(n: int):
     """Returns an approximate value of n-th harmonic number.
     http://en.wikipedia.org/wiki/Harmonic_number
+
+    Args:
+    n: 
     """
     # Euler-Mascheroni constant
     gamma = 0.57721566490153286060651209008240243104215933593992
