@@ -4,7 +4,6 @@ from numpy.typing import ArrayLike
 from scipy.special import kl_div
 
 from metrecs.utils import histogram
-from metrecs.utils import compute_kl_divergence
 
 # ALL NEED CATELOG for distribution
 # CATELOG ALL ITEMS USED TOTAL
