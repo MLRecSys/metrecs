@@ -51,7 +51,6 @@ def compute_distr(items, adjusted=False):
     for indx, item in enumerate(items):
         rank = indx + 1
         story_freq = distr.get(item, 0.0)
-        print(1 / rank / sum_one_over_ranks)
         distr[item] = (
             story_freq + 1 * 1 / rank / sum_one_over_ranks
             if adjusted
@@ -71,17 +70,16 @@ def compute_distribution(
     Args:
         a (np.ndarray[str]): _description_
         weights (np.ndarray[float], optional): _description_. Defaults to [].
-        distribution (Dict[str, float], optional): _description_. Defaults to {}.
     Returns:
         Dict: _description_
     """
-    distribution = {}
+    distr = distribution if distribution else {}
     if not np.any(weights):
         weights = np.ones(len(a)) / len(a)
     # Compute:
     for item, weight in zip(a, weights):
-        distribution[item] = weight + distribution.get(item, 0.0)
-    return distribution
+        distr[item] = weight + distr.get(item, 0.0)
+    return distr
 
 
 a = np.array(["a", "b", "c", "c"])
