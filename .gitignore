@@ -3,6 +3,7 @@
 metrecs.egg-info
 *_pycache_*
 *.pyc
+venv
 
 # JK files:
 beyond_accuracy_metrics.py
