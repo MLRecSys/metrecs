@@ -1,12 +1,11 @@
 from typing import Dict
+from numpy.typing import ArrayLike
 from scipy.spatial.distance import pdist, squareform
+from scipy.spatial import distance
 from scipy.stats import entropy
-from collections import Counter
+
 import numpy as np
 import math
-from numpy.typing import ArrayLike
-from numpy.linalg import norm
-from scipy.spatial import distance
 
 
 def harmonic_number(n):
@@ -16,6 +15,17 @@ def harmonic_number(n):
     # Euler-Mascheroni constant
     gamma = 0.57721566490153286060651209008240243104215933593992
     return gamma + math.log(n) + 0.5 / n - 1.0 / (12 * n**2) + 1.0 / (120 * n**4)
+
+
+def cosine_distances(X: ArrayLike) -> np.ndarray:
+    """Implementation of the pairwice cosine similarity function
+    Args:
+        X: {array-like, sparse matrix} of shape (n_samples_X, n_features)
+    Returns:
+        distance matrix: ndarray of shape (n_samples_X, n_samples_Y)
+    """
+    distances = pdist(X, metric="cosine")
+    return squareform(distances)
 
 
 def compute_distribution(
@@ -45,14 +55,3 @@ def compute_distribution(
     for item, weight in zip(a, weights):
         distr[item] = weight + distr.get(item, 0.0)
     return distr
-
-
-def cosine_distances(X: ArrayLike) -> np.ndarray:
-    """Implementation of the pairwice cosine similarity function
-    Args:
-        X: {array-like, sparse matrix} of shape (n_samples_X, n_features)
-    Returns:
-        distance matrix: ndarray of shape (n_samples_X, n_samples_Y)
-    """
-    distances = pdist(X, metric="cosine")
-    return squareform(distances)

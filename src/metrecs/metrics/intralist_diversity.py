@@ -5,7 +5,7 @@ import numpy as np
 
 
 def intralist_diversity(
-    recommendations: ArrayLike[ArrayLike],
+    recommendations: ArrayLike,
     distance_function: Callable = cosine_distances,
 ) -> float:
     """Smyth and McClave [2001]
@@ -14,7 +14,7 @@ def intralist_diversity(
         Diversity(R) = ( sum_{i∈R} sum_{j∈R\{i}} dist(i, j) )  / ( |R|(|R|-1) )
 
     Args:
-        recommendations (ArrayLike[ArrayLike]): {array-like, sparse matrix} of shape (n_samples_X, n_features)
+        recommendations (ArrayLike): {array-like, sparse matrix} of shape (n_samples_X, n_features)
         distance_function (Callable): function to compute the pairwise distances of recommendations vector representations. Default is cosine_distances
 
     Returns:
