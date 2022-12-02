@@ -18,6 +18,21 @@ from scipy.special import kl_div
 from scipy.spatial.distance import jensenshannon
 
 
+def JSD_root(P, Q):
+    _P = P / norm(P, ord=1)
+    _Q = Q / norm(Q, ord=1)
+    _M = 0.5 * (_P + _Q)
+    # return math.sqrt(0.5 * (KL(_P, _M) + KL(_Q, _M)))
+    # added the abs to catch situations where the disocunting causes a very small <0 value, check this more!!!!
+    try:
+        jsd_root = math.sqrt(abs(0.5 * (entropy(_P, _M, base=2) + entropy(_Q, _M, base=2))))
+    except ZeroDivisionError:
+        print(P)
+        print(Q)
+        print()
+        jsd_root = None
+    return jsd_root
+
 def avoid_distribution_misspecification(s: Dict, q: Dict, alpha=0.001) -> Dict:
     """ """
     merged_dic = np.unique(list(s) + list(q)).tolist()
@@ -50,7 +65,8 @@ def user_level_fragmentation_categorical(
     for user in other_recommendations:
         q = compute_distribution(user, weighs=positional_weights)
         ss, qq = avoid_distribution_misspecification(s, q)
-        frag.append(jensenshannon(list(ss.values()), list(qq.values()), base=2))
+        # frag.append(jensenshannon(list(ss.values()), list(qq.values()), base=2))
+        frag.append(JSD_root(list(ss.values()), list(qq.values())))
     return frag
 
 
@@ -90,7 +106,8 @@ def user_level_calibration_categorical(
     s = compute_distribution(user_items, weights=user_items_weights)
     q = compute_distribution(users_history_items, weights=users_history_items_weights)
     ss, qq = avoid_distribution_misspecification(s, q)
-    return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    # return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    return JSD_root(list(ss.values()), list(qq.values()))
 
 
 # user_level_calibration_categorical == user_level_representation_categorical
@@ -118,7 +135,8 @@ def user_level_representation_categorical(
         pool_item_representations, weights=pool_item_representations_weights
     )
     ss, qq = avoid_distribution_misspecification(s, q)
-    return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    # return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    return JSD_root(list(ss.values()), list(qq.values()))
 
 
 def model_level_calibration_categorical(
