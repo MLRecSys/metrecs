@@ -1,5 +1,6 @@
 import math
 import pandas as pd
+from typing import Callable
 import numpy as np
 from numpy.typing import ArrayLike
 from typing import Dict
@@ -43,31 +44,102 @@ user_recommendation = np.array(["a", "b", "c", "c"])
 other_recommendations = np.array([["a", "b", "b", "d"], ["d", "q", "a", "a"]])
 
 
-def user_level_fragmentation(
-    user_items: np.ndarray[np.ndarray],
-    other_recommendations: np.ndarray[np.ndarray],
+def user_level_fragmentation_categorical(
+    user_items: np.ndarray[str],
+    other_recommendations: np.ndarray[np.ndarray[str]],
+    positional_weights: np.ndarray[float] = [],
 ) -> float:
-    s = compute_distribution(user_items)
+    """
+    Args:
+        user_items (np.ndarray[np.ndarray]): _description_
+        other_recommendations (np.ndarray[np.ndarray]): _description_
+    Returns:
+        float: _description_
+    len(user_items) == other_recommendations.shape[1]
+    """
+    s = compute_distribution(user_items, weighs=positional_weights)
     frag = []
     for user in other_recommendations:
-        q = compute_distribution(user)
+        q = compute_distribution(user, weighs=positional_weights)
         ss, qq = avoid_distribution_misspecification(s, q)
         frag.append(jensenshannon(list(ss.values()), list(qq.values()), base=2))
     return frag
 
 
-def model_level_fragmentation(recommendation: np.ndarray[np.ndarray]) -> float:
+def model_level_fragmentation_categorical(
+    recommendation: np.ndarray[np.ndarray[str]],
+) -> float:
+    """_summary_
+    Args:
+        recommendation (np.ndarray[np.ndarray]): _description_
+    Returns:
+        float: _description_
+    """
     indecies = np.arange(recommendation.shape[0])
     model_lvl = []
     for row_index in range(recommendation.shape[0]):
         rec = recommendation[row_index]
         others = recommendation[indecies != row_index, :]
-        model_lvl.append(np.mean(user_level_fragmentation(rec, others)))
+        model_lvl.append(np.mean(user_level_fragmentation_categorical(rec, others)))
     return model_lvl
 
 
-user_level_fragmentation(user_recommendation, other_recommendations)
+user_level_fragmentation_categorical(user_recommendation, other_recommendations)
 recommendation = np.array(
     [["a", "b", "c", "c"], ["a", "q", "b", "d"], ["d", "q", "a", "a"]]
 )
-model_level_fragmentation(recommendation)
+model_level_fragmentation_categorical(recommendation)
+
+user_category = ["a", "b", "c", "c"]
+user_history_category = ["a", "b", "c", "c", "q", "i", "p", "a"]
+
+
+def user_level_calibration_categorical(
+    user_items: np.ndarray,
+    users_history_items: np.ndarray,
+    user_items_weights: np.ndarray = [],
+    users_history_items_weights: np.ndarray = [],
+) -> float:
+    """_summary_
+    Args:
+        user_items (np.ndarray[np.ndarray]): _description_
+        other_recommendations (np.ndarray[np.ndarray]): _description_
+    Returns:
+        float: _description_
+    len(users_history_items) == len(users_history_items_weights)
+    len(user_items) == len(user_items_weights)
+    """
+    s = compute_distribution(user_items, weights=user_items_weights)
+    q = compute_distribution(users_history_items, weights=users_history_items_weights)
+    ss, qq = avoid_distribution_misspecification(s, q)
+    return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+
+
+def model_level_calibration_categorical(
+    users: np.ndarray[np.ndarray],
+    users_history_items: np.ndarray[np.ndarray],
+    positional_weight_func: Callable = None,
+) -> float:
+    calibration_scores = []
+    for user, hist in zip(users, users_history_items):
+        user_weights = (
+            [] if not positional_weight_func else positional_weight_func(user_weights)
+        )
+        user_hist_weights = (
+            [] if not positional_weight_func else positional_weight_func(hist)
+        )
+        calibration_scores.append(
+            user_level_calibration_categorical(
+                user, hist, user_weights, user_hist_weights
+            )
+        )
+    return calibration_scores
+
+
+user_category = np.array([["a", "b", "c", "c"], ["a", "q", "d", "a"]])
+user_history_category = np.array(
+    [["a", "b", "c", "c", "q", "i", "p", "a"], ["a", "b", "c", "c", "q", "i", "p", "a"]]
+)
+
+user_level_calibration_categorical(user_category[0], user_history_category[0])
+model_level_calibration_categorical(user_category, user_history_category)
