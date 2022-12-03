@@ -165,7 +165,7 @@ def model_level_representation_categorical(
     pool_item_representations: np.ndarray[str],
     positional_weight_func: Callable = None,
 ) -> List[float]:
-    """_summary_
+    """
     Args:
         user_item_representations (np.ndarray[np.ndarray[str]]): _description_
         pool_item_representations (np.ndarray[str]): _description_
