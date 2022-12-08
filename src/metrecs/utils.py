@@ -55,3 +55,36 @@ def compute_distribution(
     for item, weight in zip(a, weights):
         distr[item] = weight + distr.get(item, 0.0)
     return distr
+
+
+
+def compute_distribution_multiple_categories(
+    a: np.ndarray[str],
+    weights: np.ndarray[float] = [],
+    distribution: Dict[str, float] = {},
+) -> Dict:
+    """_summary_
+    Args:
+        a (np.ndarray[str]): _description_
+        weights (np.ndarray[float], optional): _description_. Defaults to [].
+        distribution (Dict[str, float], optional): _description_. Defaults to {}.
+    Returns:
+        Dict: _description_
+    >>> a = np.array(["['a', 'b', 'x']", "['b', 'c', 'x']", "['c', 'a', 'y']", "['c', 'b', 'x']"])
+    >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
+    >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
+    >>> compute_distribution_multiple_categories(a, weights=w1)
+        {'a': 0.5144141061845151, 'b': 0.7148111050260482, 'x': 0.7148111050260482, 'c': 0.5640323889329686, 'y': 0.1818176950457178}
+    >>> compute_distribution_multiple_categories(a, weights=w2)
+        {'a': 0.21333324000211373, 'b': 0.2799998775027743, 'x': 0.2799998775027743, 'c': 0.1733332575017174, 'y': 0.05333331000052843}
+    >>> compute_distribution_multiple_categories(a, False)
+        {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
+    """
+    distr = {} if not distribution else distribution
+    weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
+    for item, weight in zip(a, weights):
+        cat_list = eval(item)
+        len_cat_list = len(cat_list)
+        for cat in cat_list:
+            distr[cat] = weight/len_cat_list + distr.get(cat, 0.0)
+    return distr
