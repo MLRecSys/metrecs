@@ -28,12 +28,28 @@ def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
         np.ndarray[float]: an array with scaled normalized harmonic number
 
     >>> import numpy as np
-    >>> normalized_scaled_harmonic_number_series(5)
+    >>> normalized_scaled_harmonic_number_series(6)
         array([0.43795616, 0.21897808, 0.14598539, 0.10948904, 0.08759123])
     >>> sum(normalized_scaled_harmonic_number_series(5))
         0.9999998931376903
     """
     return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
+
+
+def scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
+    """Return an array of scaled normalized harmonic numbers
+
+    Args:
+        n (int): number of values in array to return
+
+    Returns:
+        np.ndarray[float]: an array with scaled normalized harmonic number
+
+    >>> import numpy as np
+    >>> scaled_harmonic_number_series(6)
+        array([0.99778923, 0.66664429, 0.54545309, 0.47999979, 0.43795616, 0.40816325])
+    """
+    return np.array([1 / harmonic_number(i) for i in range(1, n + 1)])
 
 
 def cosine_distances(X: ArrayLike) -> np.ndarray:
