@@ -14,8 +14,7 @@ import math
 
 from metrecs.utils import compute_distribution
 
-from scipy.special import kl_div
-from scipy.spatial.distance import jensenshannon
+from scipy.spatial import distance
 
 
 def avoid_distribution_misspecification(s: Dict, q: Dict, alpha=0.001) -> Dict:
@@ -50,7 +49,9 @@ def user_level_fragmentation_categorical(
     for user in other_recommendations:
         q = compute_distribution(user, weighs=positional_weights)
         ss, qq = avoid_distribution_misspecification(s, q)
-        frag.append(jensenshannon(list(ss.values()), list(qq.values()), base=2))
+        frag.append(
+            distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
+        )
     return frag
 
 
@@ -90,7 +91,7 @@ def user_level_calibration_categorical(
     s = compute_distribution(user_items, weights=user_items_weights)
     q = compute_distribution(users_history_items, weights=users_history_items_weights)
     ss, qq = avoid_distribution_misspecification(s, q)
-    return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    return distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
 
 
 # user_level_calibration_categorical == user_level_representation_categorical
@@ -118,7 +119,7 @@ def user_level_representation_categorical(
         pool_item_representations, weights=pool_item_representations_weights
     )
     ss, qq = avoid_distribution_misspecification(s, q)
-    return jensenshannon(list(ss.values()), list(qq.values()), base=2)
+    return distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
 
 
 def model_level_calibration_categorical(
@@ -178,7 +179,7 @@ b = np.array(["a", "b", "b", "d"])
 s = compute_distribution(a)
 q = compute_distribution(b)
 ss, qq = avoid_distribution_misspecification(s, q)
-jensenshannon(list(ss.values()), list(qq.values()), base=2)
+distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
 
 
 user_recommendation = np.array(["a", "b", "c", "c"])
