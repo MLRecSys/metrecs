@@ -202,3 +202,53 @@ user_history_category = np.array(
 
 user_level_calibration_categorical(user_category[0], user_history_category[0])
 model_level_calibration_categorical(user_category, user_history_category)
+
+
+def user_level_RADio_categorical(
+    user_recommendations: np.ndarray,
+    users_context: np.ndarray,
+    user_rec_weights: np.ndarray = [],
+    users_context_weights: np.ndarray = [],
+) -> float:
+    """_summary_
+    Args:
+        user_recommendations (np.ndarray[str]): _description_
+        users_context (np.ndarray[str]): _description_
+        user_rec_weights (np.ndarray[float]): _description_
+        users_context_weights (np.ndarray[float]): _description_
+    Returns:
+        float: _description_
+    len(users_context) == len(users_context_weights)
+    len(user_recommendations) == len(user_rec_weights)
+    """
+    q = compute_distribution(user_recommendations, weights=user_rec_weights)
+    p = compute_distribution(user_rec_weights, weights=users_context_weights)
+    qq, pp = avoid_distribution_misspecification(q, p)
+    return jensenshannon(list(qq.values()), list(pp.values()), base=2)
+
+
+def user_level_RADio_multicategorical(
+    user_recommendations: np.ndarray,
+    users_context: np.ndarray,
+    user_rec_weights: np.ndarray = [],
+    users_context_weights: np.ndarray = [],
+) -> float:
+    """_summary_
+    Args:
+        user_recommendations (np.ndarray[np.ndarray[str]]): _description_
+        users_context (np.ndarray[np.ndarray[str]): _description_
+        user_rec_weights (np.ndarray[float]): _description_
+        users_context_weights (np.ndarray[float]): _description_
+    Returns:
+        float: _description_
+    len(users_context) == len(users_context_weights)
+    len(user_recommendations) == len(user_rec_weights)
+    """
+    q = compute_distribution_multiple_categories(
+        user_recommendations, weights=user_rec_weights
+    )
+    p = compute_distribution_multiple_categories(
+        user_rec_weights, weights=users_context_weights
+    )
+    qq, pp = avoid_distribution_misspecification(q, p)
+    return jensenshannon(list(qq.values()), list(pp.values()), base=2)

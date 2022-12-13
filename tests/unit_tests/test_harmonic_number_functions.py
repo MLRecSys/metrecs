@@ -1,6 +1,5 @@
 from metrecs.utils import harmonic_number as hn
 from metrecs.utils import normalized_scaled_harmonic_number_series as norm_hn_series
-from metrecs.utils import scaled_harmonic_number_series as scaled_hn_series
 
 
 def test_harmonic_number():
@@ -25,8 +24,3 @@ def test_normalized_harmonic_number_series():
     assert (
         round(sum(norm_hn_series(5)), 2) == 1.0
     ), "'normalized_harmonic_number_series(n)' output must sum to 1.0"
-
-
-def test_scaled_harmonic_number_series():
-    assert 1 / hn(1) == scaled_hn_series(1)[0]
-    assert 1 / hn(10) == scaled_hn_series(10)[-1]

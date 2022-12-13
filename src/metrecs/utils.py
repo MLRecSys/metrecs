@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from numpy.typing import ArrayLike
 from scipy.spatial.distance import pdist, squareform
 from scipy.spatial import distance
@@ -34,22 +34,6 @@ def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
         0.9999998931376903
     """
     return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
-
-
-def scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
-    """Return an array of scaled normalized harmonic numbers
-
-    Args:
-        n (int): number of values in array to return
-
-    Returns:
-        np.ndarray[float]: an array with scaled normalized harmonic number
-
-    >>> import numpy as np
-    >>> scaled_harmonic_number_series(6)
-        array([0.99778923, 0.66664429, 0.54545309, 0.47999979, 0.43795616, 0.40816325])
-    """
-    return np.array([1 / harmonic_number(i) for i in range(1, n + 1)])
 
 
 def cosine_distances(X: ArrayLike) -> np.ndarray:
@@ -95,7 +79,7 @@ def compute_distribution(
 
 
 def compute_distribution_multiple_categories(
-    a: np.ndarray[str],
+    a: List[List[str]],
     weights: np.ndarray[float] = [],
     distribution: Dict[str, float] = {},
 ) -> Dict:
@@ -106,23 +90,24 @@ def compute_distribution_multiple_categories(
         distribution (Dict[str, float], optional): _description_. Defaults to {}.
     Returns:
         Dict: _description_
-    >>> a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
-    >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
+    >>> a = [['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']]
     >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
-    >>> compute_distribution_multiple_categories(a, weights=w1)
-        {'a': 0.5144141061845151, 'b': 0.7148111050260482, 'x': 0.7148111050260482, 'c': 0.5640323889329686, 'y': 0.1818176950457178}
     >>> compute_distribution_multiple_categories(a, weights=w2)
         {'a': 0.21333324000211373, 'b': 0.2799998775027743, 'x': 0.2799998775027743, 'c': 0.1733332575017174, 'y': 0.05333331000052843}
     >>> compute_distribution_multiple_categories(a, False)
         {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
     """
+    n_elements = len(a)
+
     distr = {} if not distribution else distribution
-    weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
+    weights = weights if np.any(weights) else np.ones(n_elements) / n_elements
     for item, weight in zip(a, weights):
         n_values = len(item)
         for cat in item:
             # TODO: discuss; should we divide with n_value?
-            distr[cat] = weight / n_values + distr.get(cat, 0.0)
+            # NOT: distr[cat] = weight / n_values + distr.get(cat, 0.0)
+            distr[cat] = weight + distr.get(cat, 0.0)  # use this
+    # TODO: normlize weights
     return distr
 
 
