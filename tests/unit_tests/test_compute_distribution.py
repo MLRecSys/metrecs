@@ -1,25 +1,6 @@
 from metrecs.utils import compute_distribution, harmonic_number
 import numpy as np
 
-# =====
-def compute_distr(items, adjusted=False):
-    """Calibration
-    Compute the genre distribution for a given list of Items.
-    """
-    n = len(items)
-    sum_one_over_ranks = harmonic_number(n)
-    count = 0
-    distr = {}
-    for _, item in items.iterrows():
-        count += 1
-        topic_freq = distr.get(item.category, 0.0)
-        distr[item.category] = (
-            topic_freq + 1 * 1 / count / sum_one_over_ranks
-            if adjusted
-            else topic_freq + 1 * 1 / n
-        )
-    return distr
-
 
 def compute_distr(items, adjusted=False):
     """FRAGMENTATION
