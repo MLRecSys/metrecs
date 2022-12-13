@@ -36,6 +36,7 @@ def normalized_scaled_harmonic_number_series(n: int) -> ArrayLike[float]:
     return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
 
 
+# TODO: write unit test (should output sklearn's cosine_distances !)
 def cosine_distances(X: ArrayLike) -> np.ndarray:
     """Implementation of the pairwice cosine similarity function
     Args:
@@ -82,6 +83,7 @@ def compute_normalized_distribution(
     return distr
 
 
+# TODO: write unit test
 def compute_normalized_distribution_multiple_categories(
     a: List[set[str]],
     weights: np.ndarray[float] = None,
@@ -112,9 +114,3 @@ def compute_normalized_distribution_multiple_categories(
             distr[cat] = weight + distr.get(cat, 0.0)
     norm_ = sum(distr.values())
     return {key: val / norm_ for key, val in distr.items()}
-
-
-# {'a': 0.2933332050029064, 'x': 0.3199998600031706, 'b': 0.13999993875138714, 'c': 0.19333324875191557, 'y': 0.05333331000052843}
-# a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
-# compute_distribution_multiple_categories(a)
-# {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
