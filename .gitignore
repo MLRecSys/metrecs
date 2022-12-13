@@ -5,5 +5,5 @@ metrecs.egg-info
 *.pyc
 venv
 
-# JK files:
-beyond_accuracy_metrics.py
+# 
+sandbox/*
