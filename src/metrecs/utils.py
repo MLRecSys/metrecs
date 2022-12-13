@@ -121,5 +121,11 @@ def compute_distribution_multiple_categories(
     for item, weight in zip(a, weights):
         n_values = len(item)
         for cat in item:
+            # TODO: discuss; should we divide with n_value?
             distr[cat] = weight / n_values + distr.get(cat, 0.0)
     return distr
+
+
+# a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
+# compute_distribution_multiple_categories(a)
+# {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
