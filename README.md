@@ -1,19 +1,12 @@
-# metrecs
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPi](https://img.shields.io/pypi/v/metrecs.svg)](https://pypi.org/project/metrecs/)
+[![Issues](https://img.shields.io/github/issues/MLRecSys/metrecs.svg)](https://github.com/MLRecSys/metrecs/issues)
 
-metrics for recommendation systems
 
-![alt text](images/frozen.jpeg)
+Welcome to metrecs's documentation!
+===================================
 
-# getting started
 
-```python
-ref = np.array([["a", "a", "b", "c"],
-                     ["a", "c", "b", "c"]])
-
-own = np.array(["a", "a", "b", "c"])
-
-import numpy as np
-from metrecs import metrics
-
-metrics.fragmentation.fragmentation(pop_recs, own_recs)
-```
+Call for Contributions
+===================================
+We appreciate and welcome contributions. Small improvements or fixes are always appreciated. 

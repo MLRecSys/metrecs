@@ -1,29 +1,55 @@
+from typing import Dict
+from numpy.typing import ArrayLike
 from scipy.spatial.distance import pdist, squareform
-from collections import Counter
+from scipy.spatial import distance
+from scipy.stats import entropy
+
 import numpy as np
 import math
-from numpy.typing import ArrayLike
-from scipy.stats import entropy
-from numpy.linalg import norm
 
 
-def harmonic_number(n):
+def harmonic_number(n: int) -> float:
     """Returns an approximate value of n-th harmonic number.
-    http://en.wikipedia.org/wiki/Harmonic_number
+    The harmonic number can be approximated using the first few terms of the Taylor series expansion:
+    Source: http://en.wikipedia.org/wiki/Harmonic_number
     """
     # Euler-Mascheroni constant
     gamma = 0.57721566490153286060651209008240243104215933593992
     return gamma + math.log(n) + 0.5 / n - 1.0 / (12 * n**2) + 1.0 / (120 * n**4)
 
 
-def histogram(a: np.array, catelog, rank_aware=False):
-    n = np.unique(a, return_counts=True)[1]
-    sum_one_over_ranks = harmonic_number(len(a))
-    if rank_aware:
-        p = (n * 1 / np.sum(n)) / sum_one_over_ranks
-    else:
-        p = n * 1 / np.sum(n)
-    return p
+def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
+    """Return an array of scaled normalized harmonic numbers
+
+    Args:
+        n (int): number of values in array to return
+
+    Returns:
+        np.ndarray[float]: an array with scaled normalized harmonic number
+
+    >>> import numpy as np
+    >>> normalized_scaled_harmonic_number_series(6)
+        array([0.43795616, 0.21897808, 0.14598539, 0.10948904, 0.08759123])
+    >>> sum(normalized_scaled_harmonic_number_series(5))
+        0.9999998931376903
+    """
+    return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
+
+
+def scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
+    """Return an array of scaled normalized harmonic numbers
+
+    Args:
+        n (int): number of values in array to return
+
+    Returns:
+        np.ndarray[float]: an array with scaled normalized harmonic number
+
+    >>> import numpy as np
+    >>> scaled_harmonic_number_series(6)
+        array([0.99778923, 0.66664429, 0.54545309, 0.47999979, 0.43795616, 0.40816325])
+    """
+    return np.array([1 / harmonic_number(i) for i in range(1, n + 1)])
 
 
 def cosine_distances(X: ArrayLike) -> np.ndarray:
@@ -37,112 +63,69 @@ def cosine_distances(X: ArrayLike) -> np.ndarray:
     return squareform(distances)
 
 
-def scale_range(
-    m: np.ndarray,
-    r_min: float = None,
-    r_max: float = None,
-    t_min: float = 0,
-    t_max: float = 1.0,
-) -> None:
-    """Scale an array between a range
-    Source: https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range
-
-    m -> ((m-r_min)/(r_max-r_min)) * (t_max-t_min) + t_min
-
+def compute_distribution(
+    a: np.ndarray[str],
+    weights: np.ndarray[float] = [],
+    distribution: Dict[str, float] = {},
+) -> Dict:
+    """_summary_
     Args:
-        m ∈ [r_min,r_max] denote your measurements to be scaled
-        r_min denote the minimum of the range of your measurement
-        r_max denote the maximum of the range of your measurement
-        t_min denote the minimum of the range of your desired target scaling
-        t_max denote the maximum of the range of your desired target scaling
+        a (np.ndarray[str]): _description_
+        weights (np.ndarray[float], optional): _description_. Defaults to [].
+        distribution (Dict[str, float], optional): _description_. Defaults to {}.
+    Returns:
+        Dict: _description_
+    >>> a = np.array(["a", "b", "c", "c"])
+    >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
+    >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
+    >>> compute_distribution(a, weights=w1)
+        {'a': 0.997789233416392, 'b': 0.6666442916569965, 'c': 1.0254528751419092}
+    >>> compute_distribution(a, weights=w2)
+        {'a': 0.4799997900047559, 'b': 0.23999989500237795, 'c': 0.2799998775027743}
+    >>> compute_distr(a, False)
+        {'a': 0.25, 'b': 0.25, 'c': 0.5}
     """
-    if not r_min:
-        r_min = np.min(m)
-    if not r_max:
-        r_max = np.max(m)
-    return ((m - r_min) / (r_max - r_min)) * (t_max - t_min) + t_min
+    n_values = len(a)
+
+    distr = {} if not distribution else distribution
+    weights = weights if np.any(weights) else np.ones(n_values) / n_values
+    for item, weight in zip(a, weights):
+        distr[item] = weight + distr.get(item, 0.0)
+    return distr
 
 
-def opt_merge_max_mappings(dict1, dict2):
-    """Merges two dictionaries based on the largest value in a given mapping.
-    Parameters
-    ----------
-    dict1 : Dict[Any, Comparable]
-    dict2 : Dict[Any, Comparable]
-    Returns
-    -------
-    Dict[Any, Comparable]
-        The merged dictionary
+def compute_distribution_multiple_categories(
+    a: np.ndarray[str],
+    weights: np.ndarray[float] = [],
+    distribution: Dict[str, float] = {},
+) -> Dict:
+    """_summary_
+    Args:
+        a (np.ndarray[str]): _description_
+        weights (np.ndarray[float], optional): _description_. Defaults to [].
+        distribution (Dict[str, float], optional): _description_. Defaults to {}.
+    Returns:
+        Dict: _description_
+    >>> a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
+    >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
+    >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
+    >>> compute_distribution_multiple_categories(a, weights=w1)
+        {'a': 0.5144141061845151, 'b': 0.7148111050260482, 'x': 0.7148111050260482, 'c': 0.5640323889329686, 'y': 0.1818176950457178}
+    >>> compute_distribution_multiple_categories(a, weights=w2)
+        {'a': 0.21333324000211373, 'b': 0.2799998775027743, 'x': 0.2799998775027743, 'c': 0.1733332575017174, 'y': 0.05333331000052843}
+    >>> compute_distribution_multiple_categories(a, False)
+        {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
     """
-    # we will iterate over `other` to populate `merged`
-    merged, other = (dict1, dict2) if len(dict1) > len(dict2) else (dict2, dict1)
-    merged = dict(merged)
-
-    for key in other:
-        if key not in merged or other[key] > merged[key]:
-            merged[key] = other[key]
-    return merged
-
-
-def compute_kl_js_divergence(s, q, alpha=0.001):
-    """
-    TODO: divice into KL / JS
-    KL (p || q), the lower the better.
-    alpha is not really a tuning parameter, it's just there to make the
-    computation more numerically stable.
-    """
-    try:
-        assert 0.99 <= sum(s.values()) <= 1.01
-        assert 0.99 <= sum(q.values()) <= 1.01
-    except AssertionError:
-        print("Assertion Error")
-        pass
-    kl_div = 0.0
-    ss = []
-    qq = []
-    merged_dic = opt_merge_max_mappings(s, q)
-    for key in sorted(merged_dic.keys()):
-        q_score = q.get(key, 0.0)
-        s_score = s.get(key, 0.0)
-        ss.append((1 - alpha) * s_score + alpha * q_score)
-        qq.append((1 - alpha) * q_score + alpha * s_score)
-        # by contruction they cannot be both 0
-        # if s_score == 0 and q_score == 0:
-        #     pass
-        #     # raise Exception('Something is wrong in compute_kl_divergence')
-        # elif s_score == 0:
-        #     ss_score = (1 - alpha) * s_score + alpha * q_score
-        #     ss.append(ss_score)
-        #     qq.append(q_score)
-        # elif q_score == 0:
-        #     qq_score = (1 - alpha) * q_score + alpha * s_score
-        #     ss.append(s_score)
-        #     qq.append(qq_score)
-        # else:
-        #     ss.append(s_score)
-        #     qq.append(q_score)
-    kl = entropy(ss, qq, base=2)
-    jsd = JSD(ss, qq)
-    return [kl, jsd]
+    distr = {} if not distribution else distribution
+    weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
+    for item, weight in zip(a, weights):
+        n_values = len(item)
+        for cat in item:
+            # TODO: discuss; should we divide with n_value?
+            distr[cat] = weight / n_values + distr.get(cat, 0.0)
+    return distr
 
 
-def KL_symmetric(a, b):
-    return (entropy(a, b, base=2) + entropy(b, a, base=2)) / 2
-
-
-def JSD(P, Q):
-    _P = P / norm(P, ord=1)
-    _Q = Q / norm(Q, ord=1)
-    _M = 0.5 * (_P + _Q)
-    # return 0.5 * (KL(_P, _M) + KL(_Q, _M))
-    # added the abs to catch situations where the disocunting causes a very small <0 value, check this more!!!!
-    try:
-        jsd_root = math.sqrt(
-            abs(0.5 * (entropy(_P, _M, base=2) + entropy(_Q, _M, base=2)))
-        )
-    except ZeroDivisionError:
-        print(P)
-        print(Q)
-        print()
-        jsd_root = None
-    return
+# a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
+# compute_distribution_multiple_categories(a)
+# {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
