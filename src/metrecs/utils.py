@@ -8,13 +8,32 @@ import numpy as np
 import math
 
 
-def harmonic_number(n):
+def harmonic_number(n: int) -> float:
     """Returns an approximate value of n-th harmonic number.
-    http://en.wikipedia.org/wiki/Harmonic_number
+    The harmonic number can be approximated using the first few terms of the Taylor series expansion:
+    Source: http://en.wikipedia.org/wiki/Harmonic_number
     """
     # Euler-Mascheroni constant
     gamma = 0.57721566490153286060651209008240243104215933593992
     return gamma + math.log(n) + 0.5 / n - 1.0 / (12 * n**2) + 1.0 / (120 * n**4)
+
+
+def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
+    """Return an array of scaled normalized harmonic numbers
+
+    Args:
+        n (int): number of values in array to return
+
+    Returns:
+        np.ndarray[float]: an array with scaled normalized harmonic number
+
+    >>> import numpy as np
+    >>> normalized_scaled_harmonic_number_series(5)
+        array([0.43795616, 0.21897808, 0.14598539, 0.10948904, 0.08759123])
+    >>> sum(normalized_scaled_harmonic_number_series(5))
+        0.9999998931376903
+    """
+    return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
 
 
 def cosine_distances(X: ArrayLike) -> np.ndarray:
@@ -57,7 +76,6 @@ def compute_distribution(
     return distr
 
 
-
 def compute_distribution_multiple_categories(
     a: np.ndarray[str],
     weights: np.ndarray[float] = [],
@@ -70,7 +88,7 @@ def compute_distribution_multiple_categories(
         distribution (Dict[str, float], optional): _description_. Defaults to {}.
     Returns:
         Dict: _description_
-    >>> a = np.array(["['a', 'b', 'x']", "['b', 'c', 'x']", "['c', 'a', 'y']", "['c', 'b', 'x']"])
+    >>> a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
     >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
     >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
     >>> compute_distribution_multiple_categories(a, weights=w1)
@@ -83,8 +101,7 @@ def compute_distribution_multiple_categories(
     distr = {} if not distribution else distribution
     weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
     for item, weight in zip(a, weights):
-        cat_list = eval(item)
-        len_cat_list = len(cat_list)
-        for cat in cat_list:
-            distr[cat] = weight/len_cat_list + distr.get(cat, 0.0)
+        n_items = len(item)
+        for cat in item:
+            distr[cat] = weight / n_items + distr.get(cat, 0.0)
     return distr

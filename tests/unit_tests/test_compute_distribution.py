@@ -22,10 +22,10 @@ def compute_distr(items, adjusted=False):
     return distr
 
 
-a = np.array(["a", "b", "c", "c"])
-weights_radio = np.array(
-    [1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)]
-)
-
-assert compute_distribution(a, weights=weights_radio) == compute_distr(a, True)
-assert compute_distribution(a, distribution={}) == compute_distr(a, False)
+def test_compute_distribution():
+    a = np.array(["a", "b", "c", "c"])
+    weights_radio = np.array(
+        [1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)]
+    )
+    assert compute_distribution(a, weights=weights_radio) == compute_distr(a, True)
+    assert compute_distribution(a, distribution={}) == compute_distr(a, False)
