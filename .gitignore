@@ -4,6 +4,7 @@ metrecs.egg-info
 *_pycache_*
 *.pyc
 venv
+*/__pycache__
 
 # 
 sandbox/*

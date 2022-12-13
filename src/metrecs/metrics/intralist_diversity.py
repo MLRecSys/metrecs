@@ -11,7 +11,7 @@ def intralist_diversity(
     """Smyth and McClave [2001]
     * Source: https://link.springer.com/chapter/10.1007/3-540-44593-5_25
     * Measure the intra-list diversity of a recommendation list R(|R|>1) as the average pairwise distance between recommendations:
-        Diversity(R) = ( sum_{i∈R} sum_{j∈R\{i}} dist(i, j) )  / ( |R|(|R|-1) )
+        Diversity(R) = ( sum_{i∈R} sum_{j∈R_{i}} dist(i, j) )  / ( |R|(|R|-1) )
 
     Args:
         recommendations (ArrayLike): {array-like, sparse matrix} of shape (n_samples_X, n_features)

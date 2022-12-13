@@ -12,7 +12,10 @@ from scipy.stats import entropy
 from numpy.linalg import norm
 import math
 
-from metrecs.utils import compute_distribution
+from metrecs.utils import (
+    compute_normalized_distribution,
+    compute_normalized_distribution_multiple_categories,
+)
 
 from scipy.spatial import distance
 
@@ -44,10 +47,10 @@ def user_level_fragmentation_categorical(
         float: _description_
     len(user_items) == other_recommendations.shape[1]
     """
-    s = compute_distribution(user_items, weighs=positional_weights)
+    s = compute_normalized_distribution(user_items, weighs=positional_weights)
     frag = []
     for user in other_recommendations:
-        q = compute_distribution(user, weighs=positional_weights)
+        q = compute_normalized_distribution(user, weighs=positional_weights)
         ss, qq = avoid_distribution_misspecification(s, q)
         frag.append(
             distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
@@ -88,8 +91,10 @@ def user_level_calibration_categorical(
     len(users_history_items) == len(users_history_items_weights)
     len(user_items) == len(user_items_weights)
     """
-    s = compute_distribution(user_items, weights=user_items_weights)
-    q = compute_distribution(users_history_items, weights=users_history_items_weights)
+    s = compute_normalized_distribution(user_items, weights=user_items_weights)
+    q = compute_normalized_distribution(
+        users_history_items, weights=users_history_items_weights
+    )
     ss, qq = avoid_distribution_misspecification(s, q)
     return distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
 
@@ -112,10 +117,10 @@ def user_level_representation_categorical(
     len(users_history_items) == len(users_history_items_weights)
     len(user_items) == len(user_items_weights)
     """
-    s = compute_distribution(
+    s = compute_normalized_distribution(
         user_item_representations, weights=user_item_representations_weights
     )
-    q = compute_distribution(
+    q = compute_normalized_distribution(
         pool_item_representations, weights=pool_item_representations_weights
     )
     ss, qq = avoid_distribution_misspecification(s, q)
@@ -176,8 +181,8 @@ def model_level_representation_categorical(
 
 a = np.array(["a", "b", "c", "c"])
 b = np.array(["a", "b", "b", "d"])
-s = compute_distribution(a)
-q = compute_distribution(b)
+s = compute_normalized_distribution(a)
+q = compute_normalized_distribution(b)
 ss, qq = avoid_distribution_misspecification(s, q)
 distance.jensenshannon(list(ss.values()), list(qq.values()), base=2)
 
@@ -221,10 +226,10 @@ def user_level_RADio_categorical(
     len(users_context) == len(users_context_weights)
     len(user_recommendations) == len(user_rec_weights)
     """
-    q = compute_distribution(user_recommendations, weights=user_rec_weights)
-    p = compute_distribution(user_rec_weights, weights=users_context_weights)
+    q = compute_normalized_distribution(user_recommendations, weights=user_rec_weights)
+    p = compute_normalized_distribution(users_context, weights=users_context_weights)
     qq, pp = avoid_distribution_misspecification(q, p)
-    return jensenshannon(list(qq.values()), list(pp.values()), base=2)
+    return distance.jensenshannon(list(qq.values()), list(pp.values()), base=2)
 
 
 def user_level_RADio_multicategorical(
@@ -244,11 +249,11 @@ def user_level_RADio_multicategorical(
     len(users_context) == len(users_context_weights)
     len(user_recommendations) == len(user_rec_weights)
     """
-    q = compute_distribution_multiple_categories(
+    q = compute_normalized_distribution_multiple_categories(
         user_recommendations, weights=user_rec_weights
     )
-    p = compute_distribution_multiple_categories(
-        user_rec_weights, weights=users_context_weights
+    p = compute_normalized_distribution_multiple_categories(
+        users_context, weights=users_context_weights
     )
     qq, pp = avoid_distribution_misspecification(q, p)
-    return jensenshannon(list(qq.values()), list(pp.values()), base=2)
+    return distance.jensenshannon(list(qq.values()), list(pp.values()), base=2)

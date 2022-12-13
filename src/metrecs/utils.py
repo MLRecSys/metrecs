@@ -47,7 +47,7 @@ def cosine_distances(X: ArrayLike) -> np.ndarray:
     return squareform(distances)
 
 
-def compute_distribution(
+def compute_normalized_distribution(
     a: np.ndarray[str],
     weights: np.ndarray[float] = [],
     distribution: Dict[str, float] = {},
@@ -60,14 +60,9 @@ def compute_distribution(
     Returns:
         Dict: _description_
     >>> a = np.array(["a", "b", "c", "c"])
-    >>> w1 = np.array([1 / harmonic_number(val) for i, val in enumerate(range(1, len(a) + 1))])
-    >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
-    >>> compute_distribution(a, weights=w1)
-        {'a': 0.997789233416392, 'b': 0.6666442916569965, 'c': 1.0254528751419092}
-    >>> compute_distribution(a, weights=w2)
+    >>> weights = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
+    >>> compute_distribution(a, weights=weights)
         {'a': 0.4799997900047559, 'b': 0.23999989500237795, 'c': 0.2799998775027743}
-    >>> compute_distr(a, False)
-        {'a': 0.25, 'b': 0.25, 'c': 0.5}
     """
     n_values = len(a)
 
@@ -78,39 +73,35 @@ def compute_distribution(
     return distr
 
 
-def compute_distribution_multiple_categories(
-    a: List[List[str]],
+# TODO: write clean make tests
+def compute_normalized_distribution_multiple_categories(
+    a: List[set[str]],
     weights: np.ndarray[float] = [],
     distribution: Dict[str, float] = {},
 ) -> Dict:
     """_summary_
     Args:
-        a (np.ndarray[str]): _description_
+        a (np.ndarray[str]): list of list of a [LET PEOPLE KNOW THAT IS IS A SET OF UNIQUE ITEMS PER LIST]
         weights (np.ndarray[float], optional): _description_. Defaults to [].
         distribution (Dict[str, float], optional): _description_. Defaults to {}.
     Returns:
         Dict: _description_
-    >>> a = [['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']]
-    >>> w2 = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
-    >>> compute_distribution_multiple_categories(a, weights=w2)
-        {'a': 0.21333324000211373, 'b': 0.2799998775027743, 'x': 0.2799998775027743, 'c': 0.1733332575017174, 'y': 0.05333331000052843}
-    >>> compute_distribution_multiple_categories(a, False)
-        {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
+    >>> a = [set(['a', 'x']), set(['b', 'c', 'x']), set(['c', 'a', 'y', 'x', 'q', 't']), set(['c', 'b'])]
+    >>> weights = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
+    >>> compute_distribution_multiple_categories(a, weights=weights)
     """
     n_elements = len(a)
 
     distr = {} if not distribution else distribution
     weights = weights if np.any(weights) else np.ones(n_elements) / n_elements
     for item, weight in zip(a, weights):
-        n_values = len(item)
-        for cat in item:
-            # TODO: discuss; should we divide with n_value?
-            # NOT: distr[cat] = weight / n_values + distr.get(cat, 0.0)
+        for cat in set(item):
             distr[cat] = weight + distr.get(cat, 0.0)  # use this
-    # TODO: normlize weights
-    return distr
+    norm_ = sum(distr.values())
+    return {key: val / norm_ for key, val in distr.items()}
 
 
+# {'a': 0.2933332050029064, 'x': 0.3199998600031706, 'b': 0.13999993875138714, 'c': 0.19333324875191557, 'y': 0.05333331000052843}
 # a = np.array([['a', 'b', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y'], ['c', 'b', 'x']])
 # compute_distribution_multiple_categories(a)
 # {'a': 0.16666666666666666, 'b': 0.25, 'x': 0.25, 'c': 0.25, 'y': 0.08333333333333333}
