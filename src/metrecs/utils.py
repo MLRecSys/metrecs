@@ -85,8 +85,10 @@ def compute_distribution(
     >>> compute_distr(a, False)
         {'a': 0.25, 'b': 0.25, 'c': 0.5}
     """
+    n_values = len(a)
+
     distr = {} if not distribution else distribution
-    weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
+    weights = weights if np.any(weights) else np.ones(n_values) / n_values
     for item, weight in zip(a, weights):
         distr[item] = weight + distr.get(item, 0.0)
     return distr
@@ -117,7 +119,7 @@ def compute_distribution_multiple_categories(
     distr = {} if not distribution else distribution
     weights = weights if np.any(weights) else np.ones(len(a)) / len(a)
     for item, weight in zip(a, weights):
-        n_items = len(item)
+        n_values = len(item)
         for cat in item:
-            distr[cat] = weight / n_items + distr.get(cat, 0.0)
+            distr[cat] = weight / n_values + distr.get(cat, 0.0)
     return distr
