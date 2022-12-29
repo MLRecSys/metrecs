@@ -6,7 +6,7 @@ from metrecs.utils import (
 import numpy as np
 
 
-def test_compute_distribution():
+def test_compute_normalized_distribution():
     a = np.array(["a", "b", "c", "c"])
     weights_radio = np.array(
         [1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)]
