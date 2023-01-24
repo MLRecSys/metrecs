@@ -101,11 +101,10 @@ def compute_normalized_distribution_multiple_categories(
             * Use case; if you want to add distribution values to existing, one can input it.
     Returns:
         Dict[str, float]: dictionary with normalized distribution values
-    >>> a = [['a', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y', 'x', 'q', 't'], ['c', 'b']]
+    >>> R = [['a', 'x'], ['b', 'c', 'x'], ['c', 'a', 'y', 'x', 'q', 't'], ['c', 'b']]
     >>> weights = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
     >>> compute_normalized_distribution_multiple_categories(a, weights=weights)
     """
-    R = np.asarray(R)
     n_elements = len(R)
 
     distr = distribution if distribution else {}
