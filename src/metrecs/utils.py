@@ -68,7 +68,7 @@ def compute_normalized_distribution(
     >>> weights = np.array([1 / rank / harmonic_number(len(a)) for rank in range(1, len(a) + 1)])
     >>> compute_normalized_distribution(a, weights=weights)
         {'a': 0.4799997900047559, 'b': 0.23999989500237795, 'c': 0.2799998775027743}
-    >>> compute_normalized_distribution(a, weights=[])
+    >>> compute_normalized_distribution(a, weights=None)
         {'a': 0.25, 'b': 0.25, 'c': 0.5}
     """
     R = np.asarray(R)
