@@ -16,7 +16,7 @@ def harmonic_number(n: int) -> float:
     return gamma + math.log(n) + 0.5 / n - 1.0 / (12 * n**2) + 1.0 / (120 * n**4)
 
 
-def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
+def normalized_scaled_harmonic_number_series(n: int):
     """Return an array of scaled normalized harmonic numbers
 
     Args:
@@ -31,7 +31,7 @@ def normalized_scaled_harmonic_number_series(n: int) -> np.ndarray[float]:
     >>> sum(normalized_scaled_harmonic_number_series(5))
         0.9999998931376903
     """
-    return np.array([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
+    return np.asarray([1 / rank / harmonic_number(n) for rank in range(1, n + 1)])
 
 
 # TODO: write unit test (should output sklearn's cosine_distances !)
@@ -47,8 +47,8 @@ def cosine_distances(X: np.ndarray) -> np.ndarray:
 
 
 def compute_normalized_distribution(
-    R: np.ndarray[str],
-    weights: np.ndarray[float] = None,
+    R: List[str],
+    weights: List[float] = None,
     distribution: Dict[str, float] = None,
 ) -> Dict[str, float]:
     """
@@ -85,8 +85,8 @@ def compute_normalized_distribution(
 
 # TODO: write unit test
 def compute_normalized_distribution_multiple_categories(
-    R: Iterable[set[str]],
-    weights: np.ndarray[float] = None,
+    R: Iterable[List[str]],
+    weights: List[float] = None,
     distribution: Dict[str, float] = None,
 ) -> Dict[str, float]:
     """
