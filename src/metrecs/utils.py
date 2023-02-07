@@ -1,4 +1,4 @@
-from typing import Dict, List, Iterable
+from typing import Dict, Iterable
 
 from scipy.spatial.distance import pdist, squareform
 from scipy.spatial import distance
@@ -47,8 +47,8 @@ def cosine_distances(X: np.ndarray) -> np.ndarray:
 
 
 def compute_normalized_distribution(
-    R: List[str],
-    weights: List[float] = None,
+    R: Iterable[str],
+    weights: Iterable[float] = None,
     distribution: Dict[str, float] = None,
 ) -> Dict[str, float]:
     """
@@ -85,8 +85,8 @@ def compute_normalized_distribution(
 
 # TODO: write unit test
 def compute_normalized_distribution_multiple_categories(
-    R: Iterable[List[str]],
-    weights: List[float] = None,
+    R: Iterable[Iterable[str]],
+    weights: Iterable[float] = None,
     distribution: Dict[str, float] = None,
 ) -> Dict[str, float]:
     """
@@ -157,10 +157,10 @@ def avoid_distribution_misspecification(s: Dict, q: Dict, alpha=0.001) -> Dict:
 
 
 def user_level_RADio_categorical(
-    user_recommendations: List[str],
-    users_context: List[str],
-    user_rec_weights: List[float] = None,
-    users_context_weights: List[float] = None,
+    user_recommendations: Iterable[str],
+    users_context: Iterable[str],
+    user_rec_weights: Iterable[float] = None,
+    users_context_weights: Iterable[float] = None,
 ) -> float:
     """_summary_
     Args:
@@ -180,10 +180,10 @@ def user_level_RADio_categorical(
 
 
 def user_level_RADio_multicategorical(
-    user_recommendations: List[List[str]],
-    users_context: List[List[str]],
-    user_rec_weights: List[float] = None,
-    users_context_weights: List[float] = None,
+    user_recommendations: Iterable[Iterable[str]],
+    users_context: Iterable[Iterable[str]],
+    user_rec_weights: Iterable[float] = None,
+    users_context_weights: Iterable[float] = None,
 ) -> float:
     """_summary_
     Args:
