@@ -27,8 +27,6 @@ Despite combining multiple algorithms in the same impression, there is always a 
 | history             | Array<String> | 9223031724623608124,9223031724623612445, ... | Last articles clicked by the user in the last two months (limited to 50) |
 
 
-![](../../../../../../../../../var/folders/1q/dzgrtt9s5478fmtf81cn31ch0000gn/T/TemporaryItems/NSIRD_screencaptureui_ut52eu/Screen Shot 2023-02-18 at 15.13.23.png)
-
 ### Articles Dataset
 
 | Field           | Type    | Example                       | Description        |
